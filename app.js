@@ -4,6 +4,8 @@ const pokeName = document.querySelector(".poke-name");
 const pokeId = document.querySelector(".poke-id");
 const pokeFrontImage = document.querySelector(".poke-front-image");
 const pokeBackImage = document.querySelector(".poke-back-image");
+const pokeFrontImageShiny = document.querySelector(".poke-front-image-shiny");
+const pokeBackImageShiny = document.querySelector(".poke-back-image-shiny");
 const pokeTypeOne = document.querySelector(".poke-type-one");
 const pokeTypeTwo = document.querySelector(".poke-type-two");
 const pokeHeight = document.querySelector(".poke-height");
@@ -16,6 +18,7 @@ const rightButton = document.querySelector(".right-button");
 const TYPES = ['normal','fighting','flying','poison','ground','rock','bug','ghost','steel','fire','water','grass','electric','psychic','ice','dragon','dark','fairy'];
 let previousUrl = null;
 let nextUrl = null;
+let cries;
 ///FUNCTIONS
 function resetScreen() {
   mainScreen.classList.remove("hide");
@@ -81,6 +84,7 @@ const fetchPokeData = async id =>{
     mainScreen.classList.add(dataFirstType['type']['name']);
     
     //BASIC INFOS
+    cries = value['name'];
     pokeName.textContent = capitalize(value['name']);
     pokeId.textContent = '#'+value['id'].toString().padStart(3,'0');
     pokeHeight.textContent = value['height'];
@@ -88,6 +92,9 @@ const fetchPokeData = async id =>{
     //SPRITES
     pokeFrontImage.src = value['sprites']['front_default'] ||'';
     pokeBackImage.src = value['sprites']['back_default']||'';
+    console.log(value);
+    pokeFrontImageShiny.src = value['sprites']['front_shiny'] ||'';
+    pokeBackImageShiny.src = value['sprites']['back_shiny']||'';
   });
 };
 const handleLeftButtonClick = (e) =>{
@@ -103,6 +110,9 @@ const handleRightButtonClick = (e) =>{
 };
 
 const handleListItemClick = (e) =>{
+  let audio = new Audio("click_sound.mp3");
+  audio.volume = 0.5;
+  audio.play();
   if(!e.target)return
   const listItem = e.target;
   if(!listItem.textContent) return;
@@ -115,5 +125,10 @@ rightButton.addEventListener("click",handleRightButtonClick);
 for(const pokeListitem of pokeListItems){
   pokeListitem.addEventListener("click",handleListItemClick);
 }
+pokeName.addEventListener("click",()=>{
+  let audio = new Audio("https://play.pokemonshowdown.com/audio/cries/"+cries+".mp3");
+  audio.volume = 0.5;
+  audio.play();
+});
 //Initialize
 fetchPokeList("https://pokeapi.co/api/v2/pokemon?offset=0&limit=20")

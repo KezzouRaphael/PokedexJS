@@ -12,7 +12,13 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
-
+p {
+  padding: 10px;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+}
 .pokedex {
   align-items: flex-end;
   display: flex;
@@ -103,6 +109,9 @@ body {
   border-radius: 15px;
   height: 100%;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow: overlay;
 }
 
 .screen__header {
@@ -122,13 +131,16 @@ body {
   font-size: 20px;
 }
 
-.screen__image {
+.screen__image,
+.screen__image__shiny {
   display: flex;
   justify-content: space-around;
 }
 
 .poke-front-image,
-.poke-back-image {
+.poke-back-image,
+.poke-front-image-shiny,
+.poke-back-image-shiny {
   height: 96px;
   width: 96px;
 }
@@ -319,7 +331,7 @@ body {
   display: flex;
   font-size: 12px;
   height: 25px;
-  overflow-x: hidden;
+  /*overflow-x: hidden;*/
   padding-left: 5px;
   width: 50%;
 }
