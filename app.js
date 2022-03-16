@@ -10,7 +10,12 @@ const pokeTypeOne = document.querySelector(".poke-type-one");
 const pokeTypeTwo = document.querySelector(".poke-type-two");
 const pokeHeight = document.querySelector(".poke-height");
 const pokeWeight = document.querySelector(".poke-weight");
-
+const pokeHp = document.querySelector(".poke-stats-hp");
+const pokeAtk = document.querySelector(".poke-stats-attack");
+const pokeDef = document.querySelector(".poke-stats-defense");
+const pokeSpAtk = document.querySelector(".poke-stats-special-attack");
+const pokeSpDef = document.querySelector(".poke-stats-special-defense");
+const pokeSpeed = document.querySelector(".poke-stats-speed");
 const pokeListItems = document.querySelectorAll(".list-item");
 const leftButton = document.querySelector(".left-button");
 const rightButton = document.querySelector(".right-button");
@@ -79,6 +84,12 @@ const fetchPokeData = async id =>{
       pokeTypeTwo.textContent='';
       pokeTypeTwo.classList.add("hide");
     }
+    pokeHp.textContent = value['stats'][0]["base_stat"];
+    pokeAtk.textContent = value['stats'][1]["base_stat"];
+    pokeDef.textContent = value['stats'][2]["base_stat"];
+    pokeSpAtk.textContent = value['stats'][3]["base_stat"];
+    pokeSpDef.textContent = value['stats'][4]["base_stat"];
+    pokeSpeed.textContent = value['stats'][5]["base_stat"]
     //MS
     resetScreen();
     mainScreen.classList.add(dataFirstType['type']['name']);

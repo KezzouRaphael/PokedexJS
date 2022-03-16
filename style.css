@@ -119,11 +119,23 @@ p {
   display: flex;
   justify-content: space-between;
 }
-
+.poke-stats,
+.poke-stats-hp,
+.poke-stats-attack,
+.poke-stats-defense,
+.poke-stats-special-attack,
+.poke-stats-special-defense,
+.poke-stats-speed {
+  text-align: left;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+}
 .poke-name {
   color: white;
   font-size: 20px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .poke-id {
@@ -150,15 +162,17 @@ p {
   height: 100px;
   justify-content: space-around;
 }
-
+.stats-title {
+  text-align: center;
+  color: white;
+}
 .screen__stats {
   background: rgba(0, 0, 0, 0.3);
   border-radius: 5px;
   color: white;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   height: 100%;
-  justify-content: space-between;
   padding: 20px 15px;
 }
 
