@@ -8,7 +8,7 @@ body {
   display: flex;
   font-family: sans-serif;
   justify-content: center;
-  background-image: url(./bg.gif);
+  background-image: url(./ressources/bg.gif);
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -111,7 +111,7 @@ p {
   padding: 15px;
   display: flex;
   flex-direction: column;
-  overflow: overlay;
+  overflow: scroll;
 }
 
 .screen__header {
@@ -346,6 +346,7 @@ p {
   font-size: 12px;
   height: 25px;
   /*overflow-x: hidden;*/
+  /*overflow: scroll;*/
   padding-left: 5px;
   width: 50%;
 }

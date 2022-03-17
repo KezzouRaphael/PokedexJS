@@ -121,7 +121,7 @@ const handleRightButtonClick = (e) =>{
 };
 
 const handleListItemClick = (e) =>{
-  let audio = new Audio("click_sound.mp3");
+  let audio = new Audio("./ressources/click_sound.mp3");
   audio.volume = 0.5;
   audio.play();
   if(!e.target)return
