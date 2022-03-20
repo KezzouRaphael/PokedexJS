@@ -2,6 +2,7 @@
 const mainScreen = document.querySelector(".main-screen");
 const screenMoves = document.querySelector(".screen__moves");
 const screenPic = document.querySelector(".screen__image_main");
+const pokeDesc = document.querySelector(".poke_desc");
 const pokeName = document.querySelector(".poke-name");
 const pokeId = document.querySelector(".poke-id");
 const pokeFrontImage = document.querySelector(".poke-front-image");
@@ -28,6 +29,7 @@ let previousUrl = null;
 let nextUrl = null;
 let cries;
 let movesLevel = [];
+let evoChain = [];
 ///FUNCTIONS
 function resetScreen() {
   mainScreen.classList.remove("hide");
@@ -73,6 +75,46 @@ function createMove(move){
   moveMethod.classList.add("poke_method");
   moveMethod.textContent = capitalize(move["version_group_details"][0]["move_learn_method"]["name"]);
   screenMoves.appendChild(moveMethod);
+}
+async function fetchSpecies(url){
+  await fetch(url)
+  .then(res => res.json())
+  .then(value =>{
+    pokeDesc.textContent = value["flavor_text_entries"][0]["flavor_text"];
+    fetchEvos(value["evolution_chain"]["url"]);
+  });
+}
+async function fetchEvos(url){
+  await fetch(url)
+  .then(res => res.json())
+  .then(value =>{
+    evoChain = [];
+    let evoData = value.chain;
+    do {
+      let numberOfEvolutions = evoData['evolves_to'].length;  
+      var evoDetails = evoData['evolution_details'][0];
+      evoChain.push({
+        "species_name": evoData.species.name,
+        "min_level": !evoDetails ? 1 : evoDetails.min_level,
+        "trigger_name": !evoDetails ? null : evoDetails.trigger.name,
+        "item": !evoDetails ? null : evoDetails.item
+      });
+      if(numberOfEvolutions > 1)
+      {
+        for(let i = 1; i <numberOfEvolutions ; i++)
+        {
+          evoChain.push({
+            "species_name": evoData["evolves_to"][i].species.name,
+            "min_level":  evoData["evolves_to"][i]['evolution_details'][0]["min_level"],
+            "trigger_name": evoData["evolves_to"][i]['evolution_details'][0]["trigger"]["name"],
+            "item": evoData["evolves_to"][i]['evolution_details'][0]["item"]
+          });
+        }
+      }
+      evoData = evoData['evolves_to'][0];
+    } while (!!evoData && evoData.hasOwnProperty('evolves_to'));
+    console.log(evoChain);
+  });
 }
 const fetchPokeList = async url=>{
   //DATA FOR RIGHT SCREEN
@@ -133,7 +175,8 @@ const fetchPokeData = async id =>{
     //MS
     resetScreen();
     mainScreen.classList.add(dataFirstType['type']['name']);
-    
+    //EVOS
+    fetchSpecies(value["species"]["url"]);
     //BASIC INFOS
     cries = value['name'];
     pokeName.textContent = capitalize(value['name']);
@@ -143,7 +186,7 @@ const fetchPokeData = async id =>{
     //SPRITES
     pokeFrontImage.src = value['sprites']['front_default'] ||'';
     pokeBackImage.src = value['sprites']['back_default']||'';
-    console.log(value);
+    //console.log(value);
     pokeFrontImageShiny.src = value['sprites']['front_shiny'] ||'';
     pokeBackImageShiny.src = value['sprites']['back_shiny']||'';
     if(value["sprites"]["other"]["dream_world"]["front_default"])

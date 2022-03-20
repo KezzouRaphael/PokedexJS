@@ -170,6 +170,10 @@ p {
   display: flex;
   justify-content: center;
 }
+.screen__evos {
+  display: flex;
+  justify-content: space-around;
+}
 .poke-front-image,
 .poke-back-image,
 .poke-front-image-shiny,
@@ -190,6 +194,9 @@ p {
   padding: 1rem;
   font-size: 1.2rem;
   font-weight: bold;
+}
+.poke_desc {
+  font-size: small;
 }
 .screen__stats {
   background: rgba(0, 0, 0, 0.3);
