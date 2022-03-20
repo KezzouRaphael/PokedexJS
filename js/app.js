@@ -151,7 +151,25 @@ const fetchPokeData = async id =>{
       screenPic.style.display = "flex";
       pokeDWImage.src = value["sprites"]["other"]["dream_world"]["front_default"];
     }
+    else
+    {
+      pokeDWImage.src='';
+    }
     //MOVES
+    movesLevel = []
+    screenMoves.replaceChildren();
+    let moveTitle = document.createElement("div");
+    moveTitle.classList.add("poke_moves");
+    moveTitle.textContent = "MOVES";
+    screenMoves.appendChild(moveTitle);
+    let levelTitle = document.createElement("div");
+    levelTitle.classList.add("poke_level");
+    levelTitle.textContent = "LEVEL";
+    screenMoves.appendChild(levelTitle);
+    let methodTitle = document.createElement("div");
+    methodTitle.classList.add("poke_method");
+    methodTitle.textContent = "METHOD";
+    screenMoves.appendChild(methodTitle);
     let movesArray = value["moves"];
     movesArray.forEach(move => {
      createMoveLevel(move,move["version_group_details"][0]["move_learn_method"]["name"]);
