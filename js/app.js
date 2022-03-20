@@ -1,11 +1,14 @@
 //ALL THE DOM MANIPULATION HERE
 const mainScreen = document.querySelector(".main-screen");
+const screenMoves = document.querySelector(".screen__moves");
+const screenPic = document.querySelector(".screen__image_main");
 const pokeName = document.querySelector(".poke-name");
 const pokeId = document.querySelector(".poke-id");
 const pokeFrontImage = document.querySelector(".poke-front-image");
 const pokeBackImage = document.querySelector(".poke-back-image");
 const pokeFrontImageShiny = document.querySelector(".poke-front-image-shiny");
 const pokeBackImageShiny = document.querySelector(".poke-back-image-shiny");
+const pokeDWImage = document.querySelector(".poke-dw-image");
 const pokeTypeOne = document.querySelector(".poke-type-one");
 const pokeTypeTwo = document.querySelector(".poke-type-two");
 const pokeHeight = document.querySelector(".poke-height");
@@ -24,6 +27,7 @@ const TYPES = ['normal','fighting','flying','poison','ground','rock','bug','ghos
 let previousUrl = null;
 let nextUrl = null;
 let cries;
+let movesLevel = [];
 ///FUNCTIONS
 function resetScreen() {
   mainScreen.classList.remove("hide");
@@ -33,6 +37,42 @@ function resetScreen() {
 }
 function capitalize(str){
   return str[0].toUpperCase()+str.substr(1);
+}
+function createMoveLevel(move,method){
+  if(method == "level-up"){
+    movesLevel.push({name: move["move"]["name"],level: move["version_group_details"][0]["level_learned_at"],method : "level-up"});
+  }
+}
+function createMoveEgg(move,method){
+  if(method == "egg"){
+    createMove(move);
+  }
+}
+function createMoveTutor(move,method){
+  if(method == "tutor"){
+    createMove(move);
+  }
+}
+function createMoveMachine(move,method){
+  if(method == "machine"){
+    createMove(move);
+  }
+}
+function createMove(move){
+  let moveName = document.createElement("a");
+  moveName.classList.add("poke_moves");
+  moveName.setAttribute("href",`https://pokemondb.net/move/${move["move"]["name"]}`);
+  moveName.setAttribute("target","_blank");
+  moveName.textContent = capitalize(move["move"]["name"]);
+  screenMoves.appendChild(moveName);
+  let moveLevel = document.createElement("p");
+  moveLevel.classList.add("poke_level");
+  moveLevel.textContent = move["version_group_details"][0]["level_learned_at"];
+  screenMoves.appendChild(moveLevel);
+  let moveMethod = document.createElement("p");
+  moveMethod.classList.add("poke_method");
+  moveMethod.textContent = capitalize(move["version_group_details"][0]["move_learn_method"]["name"]);
+  screenMoves.appendChild(moveMethod);
 }
 const fetchPokeList = async url=>{
   //DATA FOR RIGHT SCREEN
@@ -106,6 +146,42 @@ const fetchPokeData = async id =>{
     console.log(value);
     pokeFrontImageShiny.src = value['sprites']['front_shiny'] ||'';
     pokeBackImageShiny.src = value['sprites']['back_shiny']||'';
+    if(value["sprites"]["other"]["dream_world"]["front_default"])
+    {
+      screenPic.style.display = "flex";
+      pokeDWImage.src = value["sprites"]["other"]["dream_world"]["front_default"];
+    }
+    //MOVES
+    let movesArray = value["moves"];
+    movesArray.forEach(move => {
+     createMoveLevel(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });
+    let movesSorted = movesLevel.sort(function(a, b) { return a.level - b.level });
+    movesSorted.forEach(move =>{
+      let moveName = document.createElement("a");
+      moveName.classList.add("poke_moves");
+      moveName.setAttribute("href",`https://pokemondb.net/move/${move["name"]}`);
+      moveName.setAttribute("target","_blank");
+      moveName.textContent = capitalize(move["name"]);
+      screenMoves.appendChild(moveName);
+      let moveLevel = document.createElement("p");
+      moveLevel.classList.add("poke_level");
+      moveLevel.textContent = move["level"];
+      screenMoves.appendChild(moveLevel);
+      let moveMethod = document.createElement("p");
+      moveMethod.classList.add("poke_method");
+      moveMethod.textContent = capitalize(move["method"]);
+      screenMoves.appendChild(moveMethod);
+    });
+    movesArray.forEach(move => {
+      createMoveEgg(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });   
+    movesArray.forEach(move => {
+      createMoveTutor(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });    
+    movesArray.forEach(move => {
+      createMoveMachine(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });
   });
 };
 const handleLeftButtonClick = (e) =>{

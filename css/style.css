@@ -1,21 +1,23 @@
+@font-face {
+  font-family: "Pokemon GB";
+  src: url("../ressources/Pokemon\ GB.ttf") format("truetype");
+}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-size: 15px;
 }
 
 body {
   display: flex;
   font-family: sans-serif;
   justify-content: center;
-  background-image: url(./ressources/bg.gif);
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 p {
   padding: 10px;
   color: white;
-  font-size: 15px;
+  font-size: 0.8rem;
   font-weight: bold;
   text-align: center;
 }
@@ -106,12 +108,13 @@ p {
 }
 
 .main-screen {
+  position: relative;
   border-radius: 15px;
   height: 100%;
   padding: 15px;
   display: flex;
   flex-direction: column;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .screen__header {
@@ -120,27 +123,41 @@ p {
   justify-content: space-between;
 }
 .poke-stats,
+.poke_moves,
+.poke_method {
+  text-align: left;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.poke_moves {
+  cursor: pointer;
+}
 .poke-stats-hp,
 .poke-stats-attack,
 .poke-stats-defense,
 .poke-stats-special-attack,
 .poke-stats-special-defense,
-.poke-stats-speed {
-  text-align: left;
+.poke-stats-speed,
+.poke-height,
+.poke-weight,
+.poke_level,
+.poke_method {
+  text-align: right;
   color: white;
-  font-size: 15px;
+  font-size: 0.8rem;
   font-weight: bold;
 }
 .poke-name {
   color: white;
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
 }
 
 .poke-id {
   color: rgba(0, 0, 0, 0.5);
-  font-size: 20px;
+  font-size: 1.2rem;
 }
 
 .screen__image,
@@ -148,11 +165,15 @@ p {
   display: flex;
   justify-content: space-around;
 }
-
+.screen__image_main {
+  display: flex;
+  justify-content: center;
+}
 .poke-front-image,
 .poke-back-image,
 .poke-front-image-shiny,
-.poke-back-image-shiny {
+.poke-back-image-shiny,
+.poke-dw-image {
   height: 96px;
   width: 96px;
 }
@@ -165,6 +186,9 @@ p {
 .stats-title {
   text-align: center;
   color: white;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 .screen__stats {
   background: rgba(0, 0, 0, 0.3);
@@ -175,7 +199,16 @@ p {
   height: 100%;
   padding: 20px 15px;
 }
-
+.screen__moves {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  color: white;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-height: calc(100%);
+  overflow-y: scroll;
+  padding: 20px 15px;
+}
 .stats__types {
   height: 100%;
   padding: 5px;
@@ -343,10 +376,8 @@ p {
   color: white;
   cursor: pointer;
   display: flex;
-  font-size: 12px;
+  font-size: 0.7rem;
   height: 25px;
-  /*overflow-x: hidden;*/
-  /*overflow: scroll;*/
   padding-left: 5px;
   width: 50%;
 }
