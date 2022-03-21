@@ -2,6 +2,7 @@
 const mainScreen = document.querySelector(".main-screen");
 const screenMoves = document.querySelector(".screen__moves");
 const screenPic = document.querySelector(".screen__image_main");
+const screenEvos = document.querySelector(".screen__evos");
 const pokeDesc = document.querySelector(".poke_desc");
 const pokeName = document.querySelector(".poke-name");
 const pokeId = document.querySelector(".poke-id");
@@ -31,6 +32,7 @@ let cries;
 let movesLevel = [];
 let evoChain = [];
 ///FUNCTIONS
+const delay = ms => new Promise(res => setTimeout(res, ms));
 function resetScreen() {
   mainScreen.classList.remove("hide");
   for(const type of TYPES){
@@ -113,8 +115,79 @@ async function fetchEvos(url){
       }
       evoData = evoData['evolves_to'][0];
     } while (!!evoData && evoData.hasOwnProperty('evolves_to'));
-    console.log(evoChain);
+    //console.log(evoChain);
+    createEvoChain(evoChain);
   });
+}
+async function createEvoChain(evoArr){
+  screenEvos.replaceChildren();
+  evoArr.forEach(async (evolution)=>{
+    console.log(evolution);
+    let newEvoContainer = document.createElement("div");
+    newEvoContainer.classList.add("poke_evos_container");
+    screenEvos.appendChild(newEvoContainer);
+    let newEvoName = document.createElement("p");
+    newEvoName.classList.add("poke_evos");
+    newEvoName.textContent = capitalize(evolution.species_name);
+    newEvoContainer.appendChild(newEvoName);
+    await fetch(`https://pokeapi.co/api/v2/pokemon/${evolution.species_name}`)
+    .then(res => res.json()).then(value =>{
+      let pokeDWImage = document.createElement("img");
+      pokeDWImage.src = value['sprites']['front_default'] ||'';
+      pokeDWImage.setAttribute("poke_name",evolution.species_name);
+      pokeDWImage.classList.add("redirect_image");
+      newEvoContainer.appendChild(pokeDWImage);
+    });
+    if(evolution.trigger_name)
+    {
+      let newEvoMethod = document.createElement("p");
+      newEvoMethod.classList.add("poke_evos");
+      newEvoMethod.textContent = capitalize(evolution.trigger_name);
+      newEvoContainer.appendChild(newEvoMethod);
+      if(evolution.trigger_name == "level-up")
+      {
+        if(evolution.min_level)
+        {
+          let levelUp = document.createElement("p");
+          levelUp.classList.add("poke_evos");
+          levelUp.textContent = "Evolves at level " + evolution.min_level;
+          newEvoContainer.appendChild(levelUp);
+        }
+        else
+        {
+          let levelUp = document.createElement("p");
+          levelUp.classList.add("poke_evos");
+          levelUp.textContent = "Special evolution";
+          newEvoContainer.appendChild(levelUp);
+        }
+      }
+      else
+      {
+        if(evolution.item)
+        {
+          let itemEvo = document.createElement("p");
+          itemEvo.classList.add("poke_evos");
+          itemEvo.textContent = "Evolves when you use a " + evolution.item.name;
+          newEvoContainer.appendChild(itemEvo);
+        }
+      }
+    }
+  });
+  
+  /*let newEvoItem = document.createElement("p");
+  newEvoName.classList.add("poke_evos");
+  newEvoName.textContent = capitalize(evolution.species_name);
+  newEvoContainer.appendChild(newEvoName);*/
+  await delay(2000);
+  let pokeImageRedirect = document.getElementsByClassName("redirect_image");
+  //console.log(pokeImageRedirect);
+  for(let i = 0 ; i < pokeImageRedirect.length;i++)
+  {
+    //console.log("test");
+    pokeImageRedirect.item(i).addEventListener("click",()=>{
+      fetchPokeDataName(pokeImageRedirect.item(i).getAttribute("poke_name"));
+    });
+  }
 }
 const fetchPokeList = async url=>{
   //DATA FOR RIGHT SCREEN
@@ -146,6 +219,103 @@ const fetchPokeList = async url=>{
         pokeListItem.textContent = '';
       }
     }
+  });
+};
+const fetchPokeDataName = async pokemonName =>{
+  //DATA FOR LEFT SCREEN
+  await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+  .then(res =>res.json())
+  .then(value =>{ 
+    //TYPES
+    const dataTypes = value['types'];
+    const dataFirstType = dataTypes[0];
+    const dataSecondType = dataTypes[1];
+    pokeTypeOne.textContent = capitalize(dataFirstType['type']['name']);
+    if(dataSecondType){
+      pokeTypeTwo.textContent = capitalize(dataSecondType['type']['name']);
+      pokeTypeTwo.classList.remove("hide");
+    }
+    else{
+      pokeTypeTwo.textContent='';
+      pokeTypeTwo.classList.add("hide");
+    }
+    pokeHp.textContent = value['stats'][0]["base_stat"];
+    pokeAtk.textContent = value['stats'][1]["base_stat"];
+    pokeDef.textContent = value['stats'][2]["base_stat"];
+    pokeSpAtk.textContent = value['stats'][3]["base_stat"];
+    pokeSpDef.textContent = value['stats'][4]["base_stat"];
+    pokeSpeed.textContent = value['stats'][5]["base_stat"]
+    //MS
+    resetScreen();
+    mainScreen.classList.add(dataFirstType['type']['name']);
+    //EVOS
+    fetchSpecies(value["species"]["url"]);
+    //BASIC INFOS
+    cries = value['name'];
+    pokeName.textContent = capitalize(value['name']);
+    pokeId.textContent = '#'+value['id'].toString().padStart(3,'0');
+    pokeHeight.textContent = value['height'];
+    pokeWeight.textContent = value['weight'];
+    //SPRITES
+    pokeFrontImage.src = value['sprites']['front_default'] ||'';
+    pokeBackImage.src = value['sprites']['back_default']||'';
+    //console.log(value);
+    pokeFrontImageShiny.src = value['sprites']['front_shiny'] ||'';
+    pokeBackImageShiny.src = value['sprites']['back_shiny']||'';
+    if(value["sprites"]["other"]["dream_world"]["front_default"])
+    {
+      screenPic.style.display = "flex";
+      pokeDWImage.src = value["sprites"]["other"]["dream_world"]["front_default"];
+    }
+    else
+    {
+      pokeDWImage.src='';
+    }
+    //MOVES
+    movesLevel = []
+    screenMoves.replaceChildren();
+    let moveTitle = document.createElement("div");
+    moveTitle.classList.add("poke_moves");
+    moveTitle.textContent = "MOVES";
+    screenMoves.appendChild(moveTitle);
+    let levelTitle = document.createElement("div");
+    levelTitle.classList.add("poke_level");
+    levelTitle.textContent = "LEVEL";
+    screenMoves.appendChild(levelTitle);
+    let methodTitle = document.createElement("div");
+    methodTitle.classList.add("poke_method");
+    methodTitle.textContent = "METHOD";
+    screenMoves.appendChild(methodTitle);
+    let movesArray = value["moves"];
+    movesArray.forEach(move => {
+     createMoveLevel(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });
+    let movesSorted = movesLevel.sort(function(a, b) { return a.level - b.level });
+    movesSorted.forEach(move =>{
+      let moveName = document.createElement("a");
+      moveName.classList.add("poke_moves");
+      moveName.setAttribute("href",`https://pokemondb.net/move/${move["name"]}`);
+      moveName.setAttribute("target","_blank");
+      moveName.textContent = capitalize(move["name"]);
+      screenMoves.appendChild(moveName);
+      let moveLevel = document.createElement("p");
+      moveLevel.classList.add("poke_level");
+      moveLevel.textContent = move["level"];
+      screenMoves.appendChild(moveLevel);
+      let moveMethod = document.createElement("p");
+      moveMethod.classList.add("poke_method");
+      moveMethod.textContent = capitalize(move["method"]);
+      screenMoves.appendChild(moveMethod);
+    });
+    movesArray.forEach(move => {
+      createMoveEgg(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });   
+    movesArray.forEach(move => {
+      createMoveTutor(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });    
+    movesArray.forEach(move => {
+      createMoveMachine(move,move["version_group_details"][0]["move_learn_method"]["name"]);
+    });
   });
 };
 const fetchPokeData = async id =>{
